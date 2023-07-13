@@ -6,8 +6,23 @@ import { Button } from './components/ui/button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from "@hookform/resolvers/zod"
 import ListTodo from './mycomponents/ListTodo'
+import { useEffect, useState } from 'react'
+import { socket } from './Socket'
 
 function App() {
+
+  const [time, setTime] = useState('fetching time..')
+
+  useEffect(() => {
+    socket.on('connect', () => console.log(socket.id))
+    socket.on('connect_error', () => {
+      setTimeout(() => socket.connect(), 5000)
+    })
+
+    socket.on('time', (data: string) => setTime(data))
+
+    socket.on('disconnect', () => setTime('server disconnected'))
+  }, [])
 
   const formSchema = z.object({
     activity: z.string().min(5).max(50),
@@ -31,6 +46,7 @@ function App() {
     <>
       <div className="container flex justify-center mt-10">
         <div className='w-6/12'>
+          <p className='text-center mb-5'>{time}</p>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField

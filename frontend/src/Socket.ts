@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client"
 
-interface todo {
+export interface todo {
     id: number
     title: string
 }
@@ -11,8 +11,9 @@ interface ServerToClientEvents {
 }
 
 interface ClientToServerEvents {
-    addTodo: (activity: string, callback: (x:todo) => void) => void
+    addTodo: (activity: string, callback: (x: todo) => void) => void
     getTodo: () => void
+    deleteTodo: (id: number, callback: () => void) => void
 }
 
 const URL = "http://localhost:3000"

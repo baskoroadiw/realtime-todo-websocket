@@ -50,6 +50,19 @@ async function addTodo(data) {
     return todo
 }
 
+async function deleteTodo(id) {
+    const deleteTodo = await prisma.Todo.deleteMany({
+        where: {
+            id: {
+                equals: id,
+            },
+        },
+    })
+
+    return deleteTodo
+}
+
+// Handle event from client
 io.on("connection", (socket) => {
     socket.on("getTodo", () => {
         getData().then((data) => {
@@ -59,6 +72,12 @@ io.on("connection", (socket) => {
 
     socket.on("addTodo", (data, callback) => {
         addTodo(data).then((x) => {
+            callback(x)
+        })
+    })
+
+    socket.on("deleteTodo", (id, callback) => {
+        deleteTodo(id).then((x) => {
             callback(x)
         })
     })

@@ -14,11 +14,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import ListTodo from "./mycomponents/ListTodo"
 import { useEffect, useState } from "react"
-import { socket } from "./Socket"
+import { socket, todo } from "./Socket"
 
 function App() {
     const [time, setTime] = useState("fetching time..")
-    const [listTodo, setListTodo] = useState<{ id: number; title: string }[]>([
+    const [listTodo, setListTodo] = useState<todo[]>([
         { id: 0, title: "" },
     ])
 
@@ -96,10 +96,20 @@ function App() {
 
                     <h2>List Todo: </h2>
 
-                    <div className="w-full flex flex-wrap gap-y-3 py-5 mt-3">
-                        {listTodo.map((data, index) => {
-                            return <ListTodo key={index} todo={data.title} />
-                        })}
+                    <div className="w-full flex flex-wrap gap-y-3 py-5 mt-3 justify-center">
+                        {listTodo.length > 0 ? (
+                            listTodo.map((data, index) => {
+                                return (
+                                    <ListTodo
+                                        key={index}
+                                        idTodo={data.id}
+                                        todo={data.title}
+                                    />
+                                )
+                            })
+                        ) : (
+                            <h1>Tidak ada todo, silahkan tambahkan todo</h1>
+                        )}
                     </div>
                 </div>
             </div>

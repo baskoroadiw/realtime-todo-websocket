@@ -18,9 +18,7 @@ import { socket, todo } from "./Socket"
 
 function App() {
     const [time, setTime] = useState("fetching time..")
-    const [listTodo, setListTodo] = useState<todo[]>([
-        { id: 0, title: "" },
-    ])
+    const [listTodo, setListTodo] = useState<todo[]>([{ id: 0, title: "" }])
 
     useEffect(() => {
         socket.on("connect", () => console.log(socket.id))
@@ -64,7 +62,9 @@ function App() {
         <>
             <div className="container flex justify-center mt-10">
                 <div className="w-6/12">
-                    <p className="text-center mb-5">{time}</p>
+                    <p className="text-center mb-5">
+                        <b>Waktu Server:</b> <br /> {time}
+                    </p>
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}

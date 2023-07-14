@@ -1,37 +1,71 @@
-const express = require('express');
+const express = require("express")
+const { PrismaClient } = require("@prisma/client")
+
 const app = express()
+const prisma = new PrismaClient()
 
-const server = require('http').createServer(app);
+const server = require("http").createServer(app)
 
-const ROOM_TODO = 'todo-room'
+const ROOM_TODO = "todo-room"
 
 // Init Socket.io
-const socketIo = require('socket.io');
+const socketIo = require("socket.io")
 
 const io = socketIo(server, {
     cors: {
         origin: ["http://localhost:5173"],
-        methods: ["GET", "POST"]
-    }
+        methods: ["GET", "POST"],
+    },
 })
-// Init Socket.io
 
-io.on('connection', (socket) => {
-    console.log('client connected: ', socket.id)
+io.on("connection", (socket) => {
+    console.log("client connected: ", socket.id)
 
     socket.join(ROOM_TODO)
 
-    socket.on('disconnect', (reason) => {
+    socket.on("disconnect", (reason) => {
         console.log(reason)
     })
 })
+// Init Socket.io
 
+// Send time to client
 setInterval(() => {
-    io.to(ROOM_TODO).emit('time', new Date().toISOString())
+    io.to(ROOM_TODO).emit("time", new Date().toISOString())
 }, 1000)
 
-app.get('/', (req, res) => {
-    res.send('Server Running...!')
+async function getData() {
+    const todo = await prisma.Todo.findMany()
+
+    return todo
+}
+
+async function addTodo(data) {
+    const todo = await prisma.Todo.create({
+        data: {
+            title: data,
+        },
+    })
+
+    return todo
+}
+
+io.on("connection", (socket) => {
+    socket.on("getTodo", () => {
+        getData().then((data) => {
+            io.to(ROOM_TODO).emit("listTodo", data)
+        })
+    })
+
+    socket.on("addTodo", (data, callback) => {
+        addTodo(data).then((x) => {
+            callback(x)
+        })
+    })
+})
+
+app.get("/", (req, res) => {
+    res.send("Server Running...!")
 })
 
 const port = 3000

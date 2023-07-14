@@ -1,16 +1,21 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client"
+
+interface todo {
+    id: number
+    title: string
+}
 
 interface ServerToClientEvents {
-    time: (a: string) => void;
-    // basicEmit: (a: number, b: string, c: Buffer) => void;
-    // withAck: (d: string, callback: (e: number) => void) => void;
+    time: (a: string) => void
+    listTodo: (list: [todo]) => void
 }
 
 interface ClientToServerEvents {
-    hello: () => void;
+    addTodo: (activity: string, callback: (x:todo) => void) => void
+    getTodo: () => void
 }
 
-const URL = 'http://localhost:3000';
+const URL = "http://localhost:3000"
 
-
-export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(URL);
+export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
+    io(URL)
